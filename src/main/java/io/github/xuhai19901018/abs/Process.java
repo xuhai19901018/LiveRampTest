@@ -1,13 +1,17 @@
 package io.github.xuhai19901018.abs;
 
-import java.util.concurrent.ExecutionException;
-
 /***
  * 
  * @author xuhai
  *
  */
 public interface Process {
+	
+	/***
+	 * 获取任务ID
+	 * @return
+	 */
+	String getId();
 	
 	/**
 	 * 查询任务状态

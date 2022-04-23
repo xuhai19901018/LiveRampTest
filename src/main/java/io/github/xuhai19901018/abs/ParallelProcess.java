@@ -31,7 +31,8 @@ public class ParallelProcess<P extends Process> extends BatchProcess {
 		pool = Executors.newFixedThreadPool(total);
 
 	}
-
+	
+	@Override
 	public boolean doing() throws Exception {
 
 		status= ProcessStatus.Handling;
