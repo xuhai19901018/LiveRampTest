@@ -43,7 +43,7 @@ public abstract class BaseProcess implements Process {
 //	}
 
 	@Override
-	public synchronized boolean retry() throws Exception {
+	public synchronized boolean redoing() throws Exception {
 		
 		if(getStatus() == ProcessStatus.Failed) {
 			return this.doing();

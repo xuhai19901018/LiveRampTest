@@ -38,7 +38,7 @@ public class SequenceProcess<P extends BaseProcess> extends BatchProcess {
 	}
 
 	@Override
-	public synchronized boolean retry() throws Exception {
+	public synchronized boolean redoing() throws Exception {
 		
 		if(getStatus() == ProcessStatus.Failed) {
 			status= ProcessStatus.Handling;

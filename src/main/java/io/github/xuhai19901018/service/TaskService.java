@@ -123,7 +123,7 @@ public class TaskService {
 				@Override
 				public void run() {
 					try {
-						taskChain.retry();
+						taskChain.redoing();
 
 					} catch (Exception e) {
 						log.error("任务执行异常", e);

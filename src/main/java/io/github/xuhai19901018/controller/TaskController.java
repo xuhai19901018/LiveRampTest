@@ -46,4 +46,16 @@ public class TaskController {
 		return taskService.taskChain.getId();
 	}
 	
+	
+	@RequestMapping("getCurrentProgress")
+	@ResponseBody
+	public Object getCurrentProgress() {
+		try {
+			return taskService.getCurrentProgress();
+		} catch (Exception e) {
+			log.error("",e);
+			return e.getMessage();
+		}
+	}
+	
 }

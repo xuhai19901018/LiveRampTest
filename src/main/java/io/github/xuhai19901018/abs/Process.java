@@ -39,7 +39,7 @@ public interface Process {
 	 * @return 
 	 * @throws Exception 
 	 */
-	boolean retry() throws Exception;
+	boolean redoing() throws Exception;
 	
 	/***
 	 * 获取当前任务状态
