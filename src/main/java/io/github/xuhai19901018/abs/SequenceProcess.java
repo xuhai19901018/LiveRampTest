@@ -8,7 +8,7 @@ import java.util.List;
  * @author xuhai
  *
  */
-public class SequenceProcess<P extends Process> extends BatchProcess {
+public class SequenceProcess<P extends BaseProcess> extends BatchProcess {
 
 	public SequenceProcess(List<P> processList) {
 

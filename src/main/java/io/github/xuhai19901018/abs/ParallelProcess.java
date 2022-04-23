@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
  * @author xuhai
  *
  */
-public class ParallelProcess<P extends Process> extends BatchProcess {
+public class ParallelProcess<P extends BaseProcess> extends BatchProcess {
 
 
 	private int passedThreshold = 0;
@@ -34,7 +34,6 @@ public class ParallelProcess<P extends Process> extends BatchProcess {
 	
 	@Override
 	public boolean doing() throws Exception {
-
 		status= ProcessStatus.Handling;
 		
 		List<Future<Boolean>> tasks = new ArrayList<>();

@@ -1,5 +1,7 @@
 package io.github.xuhai19901018.abs;
 
+import org.springframework.boot.devtools.autoconfigure.DevToolsProperties.Restart;
+
 /***
  * 
  * @author xuhai
@@ -26,5 +28,9 @@ public interface Process {
 	 */
 	boolean doing() throws Exception;
 	
-	
+	/***
+	 * 任务重试
+	 * @throws Exception 
+	 */
+	void restart() throws Exception;
 }

@@ -20,8 +20,4 @@ public abstract class BatchProcess extends BaseProcess {
 	protected int succeedCount = 0;
 	protected int failedCount = 0;
 
-	public ProcessStatus getStatus() {
-		return status;
-	}
-
 }

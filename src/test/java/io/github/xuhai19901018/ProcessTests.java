@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import io.github.xuhai19901018.abs.BaseProcess;
 import io.github.xuhai19901018.abs.ParallelProcess;
 import io.github.xuhai19901018.abs.SequenceProcess;
 import io.github.xuhai19901018.model.TaskLeaf;
@@ -23,11 +24,11 @@ class ProcessTests {
 			tasks.add( new TaskLeaf());
 		}
 
-		ParallelProcess<TaskLeaf> p = new ParallelProcess<TaskLeaf>(tasks, 2);
+		ParallelProcess<TaskLeaf> pp = new ParallelProcess<TaskLeaf>(tasks, 2);
 		
-		p.doing();
+		pp.doing();
 		
-		System.out.println(p.getId()+"----"+p.getStatus());
+		System.out.println(pp.getId()+"----"+pp.getStatus());
 		
 	}
 	
@@ -40,12 +41,36 @@ class ProcessTests {
 			tasks.add( new TaskLeaf());
 		}
 
-		SequenceProcess<TaskLeaf> p = new SequenceProcess<TaskLeaf>(tasks);
+		SequenceProcess<TaskLeaf> sp = new SequenceProcess<TaskLeaf>(tasks);
 		
-		p.doing();
+		sp.doing();
 		
-		System.out.println(p.getId()+"----"+p.getStatus());
+		System.out.println(sp.getId()+"----"+sp.getStatus());
 		
 	}
 
+	@Test
+	void testMixProcess() throws Exception {
+		
+		List<BaseProcess> stasks= new ArrayList<>();
+		
+		for (int i = 0; i < 10; i++) {
+			
+			List<TaskLeaf> ptasks= new ArrayList<>();
+			
+			for (int j = 0; j < 10; j++) {
+				ptasks.add( new TaskLeaf());
+			}
+			ParallelProcess<BaseProcess> pp = new ParallelProcess(ptasks, 4);
+			stasks.add(pp);
+		}
+		
+		SequenceProcess<BaseProcess> sp = new SequenceProcess<>(stasks);
+		
+		sp.doing();
+		
+		System.out.println(sp.getId()+"----"+sp.getStatus());
+		
+	}
+	
 }
