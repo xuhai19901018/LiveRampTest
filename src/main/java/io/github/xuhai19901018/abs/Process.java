@@ -36,10 +36,14 @@ public interface Process {
 	
 	/***
 	 * 任务重试
+	 * @return 
 	 * @throws Exception 
 	 */
-	void restart() throws Exception;
+	boolean retry() throws Exception;
 	
-	
+	/***
+	 * 获取当前任务状态
+	 * @return
+	 */
 	Object getCurrentProgress();
 }

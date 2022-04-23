@@ -20,8 +20,10 @@ public class SequenceProcess<P extends BaseProcess> extends BatchProcess {
 	}
 
 	@Override
-	public boolean doing() throws Exception {
-
+	public synchronized boolean doing() throws Exception {
+		if(getStatus() == ProcessStatus.Handling) {
+			throw new Exception("任务当前正在运行中，请勿重复运行！");
+		}
 		status= ProcessStatus.Handling;
 		
 		for (Process process : processList) {
@@ -35,5 +37,26 @@ public class SequenceProcess<P extends BaseProcess> extends BatchProcess {
 		return true;
 	}
 
-
+	@Override
+	public synchronized boolean retry() throws Exception {
+		
+		if(getStatus() == ProcessStatus.Failed) {
+			status= ProcessStatus.Handling;
+			
+			for (Process process : processList) {
+				// 从失败的节点开始
+				if (process.getStatus()!= ProcessStatus.Succeed) {
+					if(!process.doing()) {
+						status= ProcessStatus.Failed;
+						return false;
+					}
+				}
+			}
+			status= ProcessStatus.Succeed;
+			return true;
+		}
+		else {
+			throw new Exception("此任务当前状态："+getStatus()+"，无需重试");
+		}	
+	}
 }

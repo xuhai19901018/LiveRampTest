@@ -22,7 +22,7 @@ class LiveRampTestApplicationTests {
     	
     	taskService.startTaskChain(new int[][]{{1,1},{2,1},{3,1},{4,1},{5,1}});
     	
-       	while(null==taskService.instanceProcess) {
+       	while(null==taskService.taskChain) {
        		Thread.sleep(10);
        	}
        	

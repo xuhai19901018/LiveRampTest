@@ -34,13 +34,19 @@ public abstract class BaseProcess implements Process {
 	public String getId() {
 		return processId;
 	}
+//
+//	@Override
+//	public synchronized boolean doing() throws Exception {
+//		if(getStatus() == ProcessStatus.Handling) {
+//			throw new Exception("任务当前正在运行中，请勿重复运行！");
+//		}
+//	}
 
 	@Override
-	public void restart() throws Exception {
-		
+	public synchronized boolean retry() throws Exception {
 		
 		if(getStatus() == ProcessStatus.Failed) {
-			this.doing();
+			return this.doing();
 		}
 		else {
 			throw new Exception("此任务当前状态："+getStatus()+"，无需重试");

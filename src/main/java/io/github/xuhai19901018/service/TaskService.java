@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 
 import io.github.xuhai19901018.abs.BaseProcess;
 import io.github.xuhai19901018.abs.ParallelProcess;
+import io.github.xuhai19901018.abs.ProcessStatus;
 import io.github.xuhai19901018.abs.SequenceProcess;
 import io.github.xuhai19901018.model.TaskLeaf;
 import lombok.extern.slf4j.Slf4j;
-
 
 /***
  * 
@@ -29,11 +29,12 @@ public class TaskService {
 
 	private static Logger logger = LoggerFactory.getLogger(TaskService.class);
 
-	private ExecutorService pool = Executors.newSingleThreadExecutor();
-	
-	public volatile BaseProcess instanceProcess;
-	
+	private ExecutorService pool = Executors.newFixedThreadPool(2);
+
+	public volatile BaseProcess taskChain;
+
 	private boolean running = false;
+
 	/***
 	 * service初始化
 	 */
@@ -45,58 +46,77 @@ public class TaskService {
 	}
 
 	public void startTaskChain(int[][] vector) throws Exception {
-	
-		if(running) {
-			
+
+		if (running) {
+
 			throw new Exception("任务链正在运行，无法启动新任务链！");
-		}
-		else {
-			running=true;
+		} else {
+			running = true;
+			List<BaseProcess> stasks = new ArrayList<>();
+			for (int i = 0; i < vector.length; i++) {
+				List<TaskLeaf> ptasks = new ArrayList<>();
+				for (int j = 0; j < vector[i][0]; j++) {
+					TaskLeaf task = new TaskLeaf();
+					task.setName("节点" + (i + 1) + "并行" + (j + 1));
+					ptasks.add(task);
+				}
+				ParallelProcess<BaseProcess> taskNode = new ParallelProcess(ptasks, vector[i][1]);
+				taskNode.setName("节点" + (i + 1));
+				stasks.add(taskNode);
+				taskChain = new SequenceProcess<>(stasks);
+			}
 			pool.execute(new Runnable() {
-				
+
 				@Override
 				public void run() {
-					List<BaseProcess> stasks= new ArrayList<>();
-					for (int i = 0; i < vector.length; i++) {
-						List<TaskLeaf> ptasks= new ArrayList<>();
-						for (int j = 0; j < vector[i][0]; j++) {
-							TaskLeaf task = new TaskLeaf();
-							task.setName("节点"+(i+1)+"并行"+(j+1));
-							ptasks.add( task);
-						}
-						ParallelProcess<BaseProcess> taskNode = new ParallelProcess(ptasks, vector[i][1]);
-						taskNode.setName("节点"+(i+1));
-						stasks.add(taskNode);
-					}
-					instanceProcess = new SequenceProcess<>(stasks);
-					
 					try {
-						instanceProcess.doing();
+						taskChain.doing();
+
+//				       	while (taskChain.getStatus()==ProcessStatus.NotStarted || taskChain.getStatus()==ProcessStatus.Handling) {
+//				       		log.debug(taskChain.getCurrentProgress().toString());
+//				       		Thread.sleep(100);
+//						}
+
 					} catch (Exception e) {
-						log.error("任务执行异常",e);
-					}finally {
-						running=false;
+						log.error("任务执行异常", e);
+					} finally {
+						running = false;
 					}
 				}
 			});
-			
+			pool.execute(new Runnable() {
+
+				@Override
+				public void run() {
+
+					while (taskChain.getStatus() == ProcessStatus.NotStarted || taskChain.getStatus() == ProcessStatus.Handling) {
+						log.debug(taskChain.getCurrentProgress().toString());
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							log.error("监控异常",e);
+						}
+					}
+
+				}
+			});
+
 		}
 //		return instanceProcess;
 	}
-	
-	
-	public Object getCurrentProgress() throws Exception{
-		if(null==instanceProcess) {
+
+	public Object getCurrentProgress() throws Exception {
+		if (null == taskChain) {
 			throw new Exception("任务尚未初始化！");
 		}
-		return instanceProcess.getCurrentProgress();
+		return taskChain.getCurrentProgress();
 	}
-	
-	public Object getStatus() throws Exception{
-		if(null==instanceProcess) {
+
+	public Object getStatus() throws Exception {
+		if (null == taskChain) {
 			throw new Exception("任务尚未初始化！");
 		}
-		return instanceProcess.getStatus();
+		return taskChain.getStatus();
 	}
 
 	@PreDestroy
