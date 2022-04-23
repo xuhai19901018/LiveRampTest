@@ -33,4 +33,17 @@ public class TaskController {
 		return taskService.taskChain.getId();
 	}
 	
+	@RequestMapping("retryTaskChain")
+	@ResponseBody
+	public Object retryTaskChain() {
+		
+		try {
+			taskService.retryTaskChain();
+		} catch (Exception e) {
+			log.error("重启任务链失败！",e);
+			return e.getMessage();
+		}
+		return taskService.taskChain.getId();
+	}
+	
 }

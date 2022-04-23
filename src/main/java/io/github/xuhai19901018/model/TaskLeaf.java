@@ -17,8 +17,8 @@ public class TaskLeaf extends BaseProcess{
 		status= ProcessStatus.Handling;
 		//模拟任务运行时间
 		Thread.sleep(100);
-		//假设任务有98%的成功率
-		if(Math.random()>0.98) {
+		//假设任务有90%的成功率
+		if(Math.random()>0.90) {
 			status= ProcessStatus.Succeed;
 			return false;
 		}

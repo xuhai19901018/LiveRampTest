@@ -33,7 +33,7 @@ public class TaskService {
 
 	public volatile BaseProcess taskChain;
 
-	private boolean running = false;
+//	private boolean running = false;
 
 	/***
 	 * service初始化
@@ -43,15 +43,23 @@ public class TaskService {
 
 		logger.info("TaskService启动！");
 
+		pool.execute(new Runnable() {
+
+			@Override
+			public void run() {
+
+				watching();
+			}
+		});
+
 	}
 
-	public void startTaskChain(int[][] vector) throws Exception {
+	public synchronized void startTaskChain(int[][] vector) throws Exception {
 
-		if (running) {
+		if (null != taskChain && taskChain.getStatus() != ProcessStatus.Failed && taskChain.getStatus() != ProcessStatus.Succeed) {
 
 			throw new Exception("任务链正在运行，无法启动新任务链！");
 		} else {
-			running = true;
 			List<BaseProcess> stasks = new ArrayList<>();
 			for (int i = 0; i < vector.length; i++) {
 				List<TaskLeaf> ptasks = new ArrayList<>();
@@ -80,29 +88,54 @@ public class TaskService {
 					} catch (Exception e) {
 						log.error("任务执行异常", e);
 					} finally {
-						running = false;
+						log.info("任务链执行完成，执行结果："+taskChain.getCurrentProgress().toString());
 					}
 				}
 			});
+//			pool.execute(new Runnable() {
+//
+//				@Override
+//				public void run() {
+//
+//					while (taskChain.getStatus() == ProcessStatus.NotStarted || taskChain.getStatus() == ProcessStatus.Handling) {
+//						log.debug(taskChain.getCurrentProgress().toString());
+//						try {
+//							Thread.sleep(100);
+//						} catch (InterruptedException e) {
+//							log.error("监控异常", e);
+//						}
+//					}
+//					log.debug(taskChain.getCurrentProgress().toString());
+//				}
+//			});
+
+		}
+//		return instanceProcess;
+	}
+
+	public synchronized void retryTaskChain() throws Exception {
+		if (null == taskChain) {
+			throw new Exception("任务尚未初始化！");
+		} else if (taskChain.getStatus() == ProcessStatus.Failed) {
+
 			pool.execute(new Runnable() {
 
 				@Override
 				public void run() {
+					try {
+						taskChain.retry();
 
-					while (taskChain.getStatus() == ProcessStatus.NotStarted || taskChain.getStatus() == ProcessStatus.Handling) {
-						log.debug(taskChain.getCurrentProgress().toString());
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							log.error("监控异常",e);
-						}
+					} catch (Exception e) {
+						log.error("任务执行异常", e);
+					} finally {
+						log.info("任务链执行完成，执行结果："+taskChain.getCurrentProgress().toString());
 					}
-
 				}
 			});
 
+		} else {
+			throw new Exception("此任务当前状态：" + taskChain.getStatus() + "，无需重试");
 		}
-//		return instanceProcess;
 	}
 
 	public Object getCurrentProgress() throws Exception {
@@ -117,6 +150,32 @@ public class TaskService {
 			throw new Exception("任务尚未初始化！");
 		}
 		return taskChain.getStatus();
+	}
+
+//	让你无运行监控日志
+	private void watching() {
+
+		pool.execute(new Runnable() {
+			@Override
+			public void run() {
+
+				while (true) {
+					try {
+						while (null != taskChain && taskChain.getStatus() != ProcessStatus.Failed && taskChain.getStatus() != ProcessStatus.Succeed) {
+							log.debug(taskChain.getCurrentProgress().toString());
+							Thread.sleep(100);
+						}
+						Thread.sleep(100);
+
+					} catch (InterruptedException e) {
+						log.error("监控异常", e);
+					}
+
+				}
+
+			}
+		});
+
 	}
 
 	@PreDestroy
