@@ -1,5 +1,7 @@
 package io.github.xuhai19901018.abs;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /***
@@ -9,6 +11,17 @@ import java.util.UUID;
 public abstract class BaseProcess implements Process {
 
 	protected String processId= UUID.randomUUID().toString();
+	
+	protected String processName= "";
+
+	@Override
+	public String getName() {
+		return processName;
+	}
+	
+	public void setName(String processName) {
+		this.processName = processName;
+	}
 
 	protected ProcessStatus status= ProcessStatus.NotStarted;
 	
@@ -34,6 +47,13 @@ public abstract class BaseProcess implements Process {
 		}		
 	}
 	
-	
+	@Override
+	public Map<String, Object> getCurrentProgress() {
+		Map<String, Object> current = new HashMap<>();
+		current.put("ID", getId());
+		current.put("name", getName());
+		current.put("status", getStatus());
+		return current;
+	}
 
 }

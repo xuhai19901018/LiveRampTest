@@ -31,6 +31,7 @@ public class TaskService {
 
 	private ExecutorService pool = Executors.newSingleThreadExecutor();
 	
+	public volatile BaseProcess instanceProcess;
 	
 	private boolean running = false;
 	/***
@@ -43,7 +44,7 @@ public class TaskService {
 
 	}
 
-	public void startTaskChain(int[] vector) throws Exception {
+	public void startTaskChain(int[][] vector) throws Exception {
 	
 		if(running) {
 			
@@ -58,26 +59,45 @@ public class TaskService {
 					List<BaseProcess> stasks= new ArrayList<>();
 					for (int i = 0; i < vector.length; i++) {
 						List<TaskLeaf> ptasks= new ArrayList<>();
-						for (int j = 0; j < vector[i]; j++) {
-							ptasks.add( new TaskLeaf());
+						for (int j = 0; j < vector[i][0]; j++) {
+							TaskLeaf task = new TaskLeaf();
+							task.setName("节点"+(i+1)+"并行"+(j+1));
+							ptasks.add( task);
 						}
-						ParallelProcess<BaseProcess> pp = new ParallelProcess(ptasks, 4);
-						stasks.add(pp);
+						ParallelProcess<BaseProcess> taskNode = new ParallelProcess(ptasks, vector[i][1]);
+						taskNode.setName("节点"+(i+1));
+						stasks.add(taskNode);
 					}
-					SequenceProcess<BaseProcess> sp = new SequenceProcess<>(stasks);
+					instanceProcess = new SequenceProcess<>(stasks);
 					
 					try {
-						sp.doing();
+						instanceProcess.doing();
 					} catch (Exception e) {
 						log.error("任务执行异常",e);
+					}finally {
+						running=false;
 					}
 				}
 			});
 			
-			running=false;
 		}
+//		return instanceProcess;
 	}
 	
+	
+	public Object getCurrentProgress() throws Exception{
+		if(null==instanceProcess) {
+			throw new Exception("任务尚未初始化！");
+		}
+		return instanceProcess.getCurrentProgress();
+	}
+	
+	public Object getStatus() throws Exception{
+		if(null==instanceProcess) {
+			throw new Exception("任务尚未初始化！");
+		}
+		return instanceProcess.getStatus();
+	}
 
 	@PreDestroy
 	private void preDestroy() {

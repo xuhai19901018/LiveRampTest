@@ -63,7 +63,7 @@ public class ParallelProcess<P extends BaseProcess> extends BatchProcess {
 			}
 		}
 
-		if (succeedCount > passedThreshold) {
+		if (succeedCount >= passedThreshold) {
 			status= ProcessStatus.Succeed;
 			return true;
 		}

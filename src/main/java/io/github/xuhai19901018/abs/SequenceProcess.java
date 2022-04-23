@@ -1,5 +1,6 @@
 package io.github.xuhai19901018.abs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /***
@@ -33,5 +34,6 @@ public class SequenceProcess<P extends BaseProcess> extends BatchProcess {
 		status= ProcessStatus.Succeed;
 		return true;
 	}
+
 
 }

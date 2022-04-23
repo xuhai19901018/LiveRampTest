@@ -15,6 +15,12 @@ public interface Process {
 	 */
 	String getId();
 	
+	/***
+	 * 获取任务名称
+	 * @return
+	 */
+	String getName();
+	
 	/**
 	 * 查询任务状态
 	 * @return
@@ -33,4 +39,7 @@ public interface Process {
 	 * @throws Exception 
 	 */
 	void restart() throws Exception;
+	
+	
+	Object getCurrentProgress();
 }
