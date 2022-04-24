@@ -1,0 +1,84 @@
+{
+	"info": {
+		"_postman_id": "6d1a135a-c1b1-4221-83ee-76f51e509630",
+		"name": "LiveRampTest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "127.0.0.1:8888/task/startTaskChain",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    [\r\n        1,\r\n        1\r\n    ],\r\n    [\r\n        2,\r\n        1\r\n    ],\r\n    [\r\n        3,\r\n        1\r\n    ],\r\n    [\r\n        4,\r\n        1\r\n    ],\r\n    [\r\n        5,\r\n        4\r\n    ],\r\n    [\r\n        6,\r\n        5\r\n    ],\r\n    [\r\n        7,\r\n        6\r\n    ],\r\n    [\r\n        8,\r\n        7\r\n    ],\r\n    [\r\n        9,\r\n        8\r\n    ]\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8888/task/startTaskChain",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8888",
+					"path": [
+						"task",
+						"startTaskChain"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "127.0.0.1:8888/task/retryTaskChain",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8888/task/retryTaskChain",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8888",
+					"path": [
+						"task",
+						"retryTaskChain"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "127.0.0.1:8888/task/getCurrentProgress",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8888/task/getCurrentProgress",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8888",
+					"path": [
+						"task",
+						"getCurrentProgress"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
