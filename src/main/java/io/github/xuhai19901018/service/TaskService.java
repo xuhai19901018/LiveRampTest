@@ -29,7 +29,7 @@ public class TaskService {
 
 	private static Logger logger = LoggerFactory.getLogger(TaskService.class);
 
-	private ExecutorService pool = Executors.newFixedThreadPool(2);
+	private ExecutorService pool = Executors.newSingleThreadExecutor();
 
 	public volatile BaseProcess taskChain;
 
@@ -43,14 +43,14 @@ public class TaskService {
 
 		logger.info("TaskService启动！");
 
-		pool.execute(new Runnable() {
+		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 
 				watching();
 			}
-		});
+		}).start();
 
 	}
 
@@ -79,12 +79,6 @@ public class TaskService {
 				public void run() {
 					try {
 						taskChain.doing();
-
-//				       	while (taskChain.getStatus()==ProcessStatus.NotStarted || taskChain.getStatus()==ProcessStatus.Handling) {
-//				       		log.debug(taskChain.getCurrentProgress().toString());
-//				       		Thread.sleep(100);
-//						}
-
 					} catch (Exception e) {
 						log.error("任务执行异常", e);
 					} finally {
@@ -92,25 +86,7 @@ public class TaskService {
 					}
 				}
 			});
-//			pool.execute(new Runnable() {
-//
-//				@Override
-//				public void run() {
-//
-//					while (taskChain.getStatus() == ProcessStatus.NotStarted || taskChain.getStatus() == ProcessStatus.Handling) {
-//						log.debug(taskChain.getCurrentProgress().toString());
-//						try {
-//							Thread.sleep(100);
-//						} catch (InterruptedException e) {
-//							log.error("监控异常", e);
-//						}
-//					}
-//					log.debug(taskChain.getCurrentProgress().toString());
-//				}
-//			});
-
 		}
-//		return instanceProcess;
 	}
 
 	public synchronized void retryTaskChain() throws Exception {
@@ -154,33 +130,34 @@ public class TaskService {
 
 //	让你无运行监控日志
 	private void watching() {
-
-		pool.execute(new Runnable() {
-			@Override
-			public void run() {
-
-				while (true) {
-					try {
-						while (null != taskChain && taskChain.getStatus() != ProcessStatus.Failed && taskChain.getStatus() != ProcessStatus.Succeed) {
-							log.debug(taskChain.getCurrentProgress().toString());
-							Thread.sleep(100);
-						}
-						Thread.sleep(100);
-
-					} catch (InterruptedException e) {
-						log.error("监控异常", e);
-					}
-
+		while (true) {
+			try {
+				while (null != taskChain && taskChain.getStatus() != ProcessStatus.Failed && taskChain.getStatus() != ProcessStatus.Succeed) {
+					log.debug(taskChain.getCurrentProgress().toString());
+					Thread.sleep(100);
 				}
+				Thread.sleep(100);
 
+			} catch (InterruptedException e) {
+				log.error("监控异常", e);
 			}
-		});
 
+		}
 	}
 
 	@PreDestroy
 	private void preDestroy() {
+		pool.shutdown();
+
+		while (!pool.isTerminated()) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+
+			}
+		}
 		logger.info("TaskService结束！");
+		
 	}
 
 }

@@ -19,6 +19,10 @@ public class ParallelProcess<P extends BaseProcess> extends BatchProcess {
 	private int passedThreshold = 0;
 
 	private ExecutorService pool;
+	
+	private int total;
+	private int succeedCount = 0;
+	private int failedCount = 0;
 
 	public ParallelProcess(List<P> processList, int passedThreshold) {
 

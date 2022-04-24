@@ -22,15 +22,15 @@ class LiveRampTestApplicationTests {
     	
     	taskService.startTaskChain(new int[][]{{1,1},{2,1},{3,1},{4,1},{5,1}});
     	
-       	while(null==taskService.taskChain) {
-       		Thread.sleep(10);
-       	}
+//       	while(null==taskService.taskChain) {
+//       		Thread.sleep(10);
+//       	}
        	
        	while (taskService.getStatus()==ProcessStatus.NotStarted || taskService.getStatus()==ProcessStatus.Handling) {
-       		System.out.println(taskService.getCurrentProgress().toString());
+//       		System.out.println(taskService.getCurrentProgress().toString());
        		Thread.sleep(10);
 		}
-       	System.out.println(taskService.getCurrentProgress().toString());
+//       	System.out.println(taskService.getCurrentProgress().toString());
     }
     
 }

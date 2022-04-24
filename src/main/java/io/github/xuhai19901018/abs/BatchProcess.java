@@ -17,9 +17,7 @@ public abstract class BatchProcess extends BaseProcess {
 	
 	protected List<Process> processList;
 
-	protected int total;
-	protected int succeedCount = 0;
-	protected int failedCount = 0;
+
 
 	@Override
 	public Map<String, Object> getCurrentProgress() {

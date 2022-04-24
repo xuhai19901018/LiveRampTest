@@ -15,8 +15,6 @@ public class SequenceProcess<P extends BaseProcess> extends BatchProcess {
 
 		this.processList = (List<Process>) processList;
 
-		total = processList.size();
-
 	}
 
 	@Override
